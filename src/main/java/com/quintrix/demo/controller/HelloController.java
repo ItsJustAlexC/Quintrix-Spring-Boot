@@ -1,60 +1,63 @@
 package com.quintrix.demo.controller;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.quintrix.demo.dao.UserDao;
 import com.quintrix.demo.model.User;
 
 @RestController
 public class HelloController {
-	@GetMapping("/hello")
+
+	@Autowired
+	UserDao dao;
+
+	@GetMapping("/home")
 	public String helloWorld() {
-		return "Hello World";
+		return "Welcome, Test Page";
 	}
 
-	@PostMapping("/rParam")
-	public User Display(@RequestParam String firstName, @RequestParam String lastName) {
-		User user = new User();
-		user.setFirstName(firstName);
-		user.setLastName(lastName);
-		return user;
+	@GetMapping("/home/user")
+	public List<User> get() {
+		return dao.selectAll();
 	}
 
-	@PostMapping("/rPath/{id}")
-	public User Display(@PathVariable("id") String id) {
-		User user = new User();
-		String name = "";
-		switch (id) {
-		case "1":
-			name = "John Doe";
-			break;
-		case "2":
-			name = "Richard Adams";
-			break;
-		case "3":
-			name = "Steve Smith";
-			break;
-		}
-
-		if (id != null) {
-			int space = name.indexOf(" ");
-			user.setFirstName(name.substring(0, space));
-			user.setLastName(name.substring(space + 1, name.length()));
-		}
-
-		return user;
-
+	@GetMapping("/home/user/{id}")
+	public User get(@PathVariable("id") int id) {
+		return dao.selectUser(id);
 	}
 
-	@PostMapping("/rBody")
-	public User Display(@RequestBody User input) {
-		User user = new User();
-		user.setFirstName(input.getFirstName());
-		user.setLastName(input.getLastName());
-		return user;
+	@PostMapping(params = { "id", "firstName", "lastName" }, value = "/home/user")
+	public int post(@RequestParam int id, @RequestParam String firstName, @RequestParam String lastName) {
+		return dao.createUser(id, firstName, lastName);
+	}
+
+	@PostMapping("/home/user")
+	public int post(@RequestBody User user) {
+		return dao.createUser(user);
+	}
+
+	@PutMapping(params = { "id", "firstName", "lastName" }, value = "/home/user")
+	public int put(@RequestParam int id, @RequestParam String firstName, @RequestParam String lastName) {
+		return dao.updateUser(id, firstName, lastName);
+	}
+
+	@PutMapping("/home/user")
+	public int put(@RequestBody User user) {
+		return dao.updateUser(user);
+	}
+
+	@DeleteMapping("/home/user/{id}")
+	public int delete(@PathVariable("id") int id) {
+		return dao.deleteUser(id);
 	}
 }
