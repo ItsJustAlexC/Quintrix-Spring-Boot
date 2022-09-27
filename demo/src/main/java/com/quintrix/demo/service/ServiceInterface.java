@@ -1,9 +1,9 @@
-package com.quintrix.demo.dao;
+package com.quintrix.demo.service;
 
 import java.util.List;
 import com.quintrix.demo.model.User;
 
-public interface DaoInterface {
+public interface ServiceInterface {
 
   int createUser(int id, String firstName, String lastName);
 
@@ -21,4 +21,3 @@ public interface DaoInterface {
 
   void deleteAll();
 }
-
